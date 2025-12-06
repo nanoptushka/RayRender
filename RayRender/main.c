@@ -12,6 +12,30 @@ double playerZ = 0.0;
 const int playerSize = 15;
 const int speed = 4;
 
+const double raysNumber = 120;
+const int FOV = M_PI / 3;
+const double halfFOV = FOV / 2;
+const double deltaAngle = FOV / raysNumber;
+const int maxDepth = 800;
+
+void rayCasting() {
+    double curAngle = playerZ - halfFOV;
+    double xo = playerX;
+    double yo = playerY;
+
+    for (int ray = 0; ray < raysNumber; ray++) {
+        double sin_a = sin(curAngle);
+        double cos_a = cos(curAngle);
+        
+        for (int depth = 0; depth < maxDepth; depth++) {
+            double x = xo + depth * cos_a;
+            double y = yo + depth * sin_a;
+            DrawLine(playerX, playerY, x, y, DARKGRAY);
+        }
+        curAngle += deltaAngle;
+    }
+}
+
 void map() {
 	int map[12][16] = {
     	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -79,7 +103,7 @@ void player() {
 	
 	/* RAYX = PLAYERX + WIDTH * COS(PLAYER_ANGLE) */
 	/* RAYY = PLAYERY + WIDTH * SIN(PLAYER_ANGLE) */
-	DrawLine(playerX, playerY, playerX + screenWidth * cos(playerZ), playerY + screenWidth * sin(playerZ), RED);
+	// DrawLine(playerX, playerY, playerX + screenWidth * cos(playerZ), playerY + screenWidth * sin(playerZ), RED);
 } 
 
 void drawFPS(int valueFPS) {
@@ -97,6 +121,7 @@ int main() {
             ClearBackground(BLACK);
             map();
             player(playerX, playerY, speed);
+            rayCasting();
             drawFPS(GetFPS());
         EndDrawing();
     }

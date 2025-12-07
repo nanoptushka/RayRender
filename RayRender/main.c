@@ -18,40 +18,67 @@ const double halfFOV = FOV / 2;
 const double deltaAngle = FOV / raysNumber;
 const int maxDepth = 800;
 
+const int MAP_WIDTH_CELLS = 16;
+const int MAP_HEIGHT_CELLS = 12;
+const int CELL_SIZE_X = 80;
+const int CELL_SIZE_Y = 60;
+
+int map[12][16] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+    {1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+};
+
 void rayCasting() {
     double curAngle = playerZ - halfFOV;
-    double xo = playerX;
-    double yo = playerY;
-
+    
     for (int ray = 0; ray < raysNumber; ray++) {
         double sin_a = sin(curAngle);
         double cos_a = cos(curAngle);
         
+        double rayEndX = playerX;
+        double rayEndY = playerY;
+
         for (int depth = 0; depth < maxDepth; depth++) {
-            double x = xo + depth * cos_a;
-            double y = yo + depth * sin_a;
-            DrawLine(playerX, playerY, x, y, DARKGRAY);
+            double x = playerX + depth * cos_a;
+            double y = playerY + depth * sin_a;
+
+            int mapX = (int)(x / CELL_SIZE_X);
+            int mapY = (int)(y / CELL_SIZE_Y);
+
+            if (mapX >= 0 && mapX < MAP_WIDTH_CELLS &&
+                mapY >= 0 && mapY < MAP_HEIGHT_CELLS) {
+
+                if (map[mapY][mapX] == 1) {
+                    rayEndX = x;
+                    rayEndY = y;
+                    break;
+                }
+            } else {
+                rayEndX = x; 
+                rayEndY = y;
+                break;
+            }
+            rayEndX = x;
+            rayEndY = y;
         }
+        
+        DrawLine(playerX, playerY, (int)rayEndX, (int)rayEndY, DARKGRAY);
+
         curAngle += deltaAngle;
     }
 }
 
-void map() {
-	int map[12][16] = {
-    	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    	{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1},
-    	{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    	{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-    	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	};
-
+void drawMap() {
     for (int y = 0; y < 12; y++) {
         for (int x = 0; x < 16; x++) {
             switch (map[y][x]) {
@@ -100,10 +127,6 @@ void player() {
 	}
 	
 	DrawCircle(playerX, playerY, playerSize, GREEN);
-	
-	/* RAYX = PLAYERX + WIDTH * COS(PLAYER_ANGLE) */
-	/* RAYY = PLAYERY + WIDTH * SIN(PLAYER_ANGLE) */
-	// DrawLine(playerX, playerY, playerX + screenWidth * cos(playerZ), playerY + screenWidth * sin(playerZ), RED);
 } 
 
 void drawFPS(int valueFPS) {
@@ -119,7 +142,7 @@ int main() {
     while (!WindowShouldClose()) {
         BeginDrawing();
             ClearBackground(BLACK);
-            map();
+            drawMap();
             player(playerX, playerY, speed);
             rayCasting();
             drawFPS(GetFPS());

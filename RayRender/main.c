@@ -1,3 +1,7 @@
+# if defined(WIN32) && !defined(_DEBUG)
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 #include <stdio.h>
 #include <math.h>
 #include <raylib.h>
@@ -22,7 +26,7 @@ const int MAP_WIDTH_CELLS = 16;
 const int MAP_HEIGHT_CELLS = 12;
 const int CELL_SIZE_X = 80;
 const int CELL_SIZE_Y = 60;
-double wallDistances[128];
+double wallDistances[1280];
 const double PROJECTION_COEFF = screenWidth;
 
 int map[12][16] = {
@@ -94,7 +98,6 @@ void drawMap() {
         for (int x = 0; x < 16; x++) {
             switch (map[y][x]) {
                 case 0:
-                    DrawRectangle(x * 80, y * 60, 80, 60, BLACK);
                     break;
                 case 1:
                     DrawRectangleLines(x * 80, y * 60, 80, 60, RED);
@@ -140,30 +143,34 @@ void player() {
 	DrawCircle(playerX, playerY, playerSize, GREEN);
 } 
 
+/*
 void drawFPS(int valueFPS) {
     char FPS[100];
     snprintf(FPS, sizeof(FPS), "FPS: %d", valueFPS);
 	DrawText(FPS, 10, 10, 32, GREEN);
 }
+*/
 
 int main() {
-    InitWindow(screenWidth, screenHeight, "RayRender - A simple ray casting algorithm-based render written in C by nanoptushka");
-
+    InitWindow(screenWidth, screenHeight, "");
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
+    	char title[1000];
+    	snprintf(title, sizeof(title), "RayRender [fps: %d]", GetFPS());
+    	SetWindowTitle(title); 
         BeginDrawing();
             ClearBackground(BLACK);
-            drawMap();
-            player(playerX, playerY, speed);
             rayCasting();
             for (int ray = 0; ray < raysNumber; ray++) {
                 if (wallDistances[ray] > 0) {
                     double wallHeight = screenWidth / wallDistances[ray];
                     double screenX = ray * (screenWidth / raysNumber);
-                    DrawRectangle(screenX, (screenHeight / 2) - (wallHeight / 2), (screenWidth / raysNumber), wallHeight * 15, WHITE);
+                    DrawRectangle(screenX, (screenHeight / 2) - (wallHeight / 2), (screenWidth / raysNumber), wallHeight * 20 , WHITE);
                 }
             }
-            drawFPS(GetFPS());
+            drawMap();
+            player(playerX, playerY, speed);
+            /* drawFPS(GetFPS()); */
         EndDrawing();
     }
     CloseWindow();

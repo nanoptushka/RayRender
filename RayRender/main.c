@@ -23,7 +23,7 @@ const int MAP_HEIGHT_CELLS = 12;
 const int CELL_SIZE_X = 80;
 const int CELL_SIZE_Y = 60;
 double wallDistances[1280];
-const double PROJECTION_COEFF = screenWidth;
+const double PROJECTION_COEFF = screenWidth * 3;
 
 int map[12][16] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -84,7 +84,7 @@ void rayCasting() {
         
         wallDistances[ray] = correctedDepth; 
 
-		DrawLine(playerX, playerY, (int)rayEndX, (int)rayEndY, DARKGRAY);
+		/* DrawLine(playerX, playerY, (int)rayEndX, (int)rayEndY, DARKGRAY); */
         currentRayAngle += deltaAngle;
     }
 }
@@ -136,7 +136,7 @@ void player() {
 		playerZ = playerZ + 0.02;
 	}
 	
-	DrawCircle(playerX, playerY, playerSize, GREEN);
+	/* DrawCircle(playerX, playerY, playerSize, GREEN); */
 } 
 
 /*
@@ -155,16 +155,17 @@ int main() {
     	snprintf(title, sizeof(title), "RayRender [fps: %d]", GetFPS());
     	SetWindowTitle(title); 
         BeginDrawing();
-            ClearBackground(BLACK);
+            ClearBackground(DARKGREEN);
             rayCasting();
+            DrawRectangle(0, 0, 1280, 360, LIME);
             for (int ray = 0; ray < raysNumber; ray++) {
                 if (wallDistances[ray] > 0) {
                     double wallHeight = screenWidth / wallDistances[ray];
                     double screenX = ray * (screenWidth / raysNumber);
-                    DrawRectangle(screenX, (screenHeight / 2) - (wallHeight / 2), (screenWidth / raysNumber), wallHeight * 20 , WHITE);
+                    DrawRectangle(screenX, (screenHeight / 2) - (wallHeight / 2), (screenWidth / raysNumber), wallHeight * 20, GREEN);
                 }
             }
-            drawMap();
+            /* drawMap(); */
             player(playerX, playerY, speed);
             /* drawFPS(GetFPS()); */
         EndDrawing();
@@ -172,5 +173,4 @@ int main() {
     CloseWindow();
 
     return 0;
-
 }

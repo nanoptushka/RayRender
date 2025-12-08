@@ -12,7 +12,7 @@ double playerZ = 0.0;
 const int playerSize = 15;
 const int speed = 4;
 
-const double raysNumber = 120;
+const double raysNumber = 128;
 const int FOV = M_PI / 3;
 const double halfFOV = FOV / 2;
 const double deltaAngle = FOV / raysNumber;
@@ -22,6 +22,8 @@ const int MAP_WIDTH_CELLS = 16;
 const int MAP_HEIGHT_CELLS = 12;
 const int CELL_SIZE_X = 80;
 const int CELL_SIZE_Y = 60;
+double wallDistances[128];
+const double PROJECTION_COEFF = screenWidth;
 
 int map[12][16] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -39,42 +41,51 @@ int map[12][16] = {
 };
 
 void rayCasting() {
-    double curAngle = playerZ - halfFOV;
+    double currentRayAngle = playerZ - halfFOV;
     
     for (int ray = 0; ray < raysNumber; ray++) {
-        double sin_a = sin(curAngle);
-        double cos_a = cos(curAngle);
+        double sin_a = sin(currentRayAngle);
+        double cos_a = cos(currentRayAngle);
         
         double rayEndX = playerX;
         double rayEndY = playerY;
-
-        for (int depth = 0; depth < maxDepth; depth++) {
-            double x = playerX + depth * cos_a;
-            double y = playerY + depth * sin_a;
-
+        double currentDepth = 0.0;
+        for (int depth_step = 0; depth_step < maxDepth; depth_step++) {
+            double x = playerX + depth_step * cos_a;
+            double y = playerY + depth_step * sin_a;
+            
             int mapX = (int)(x / CELL_SIZE_X);
             int mapY = (int)(y / CELL_SIZE_Y);
-
+            
             if (mapX >= 0 && mapX < MAP_WIDTH_CELLS &&
                 mapY >= 0 && mapY < MAP_HEIGHT_CELLS) {
-
+                
                 if (map[mapY][mapX] == 1) {
+                    currentDepth = depth_step;
                     rayEndX = x;
                     rayEndY = y;
                     break;
                 }
             } else {
+                currentDepth = depth_step;
                 rayEndX = x; 
                 rayEndY = y;
                 break;
             }
+
+            if (depth_step == maxDepth - 1) {
+                currentDepth = maxDepth;
+            }
             rayEndX = x;
             rayEndY = y;
         }
-        
-        DrawLine(playerX, playerY, (int)rayEndX, (int)rayEndY, DARKGRAY);
 
-        curAngle += deltaAngle;
+        double correctedDepth = currentDepth * cos(currentRayAngle - playerZ);
+        
+        wallDistances[ray] = correctedDepth; 
+
+		DrawLine(playerX, playerY, (int)rayEndX, (int)rayEndY, DARKGRAY);
+        currentRayAngle += deltaAngle;
     }
 }
 
@@ -136,7 +147,7 @@ void drawFPS(int valueFPS) {
 }
 
 int main() {
-    InitWindow(screenWidth, screenHeight, "RayRender - Ray-casting algorithm written in C");
+    InitWindow(screenWidth, screenHeight, "RayRender - A simple ray casting algorithm-based render written in C by nanoptushka");
 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
@@ -145,6 +156,13 @@ int main() {
             drawMap();
             player(playerX, playerY, speed);
             rayCasting();
+            for (int ray = 0; ray < raysNumber; ray++) {
+                if (wallDistances[ray] > 0) {
+                    double wallHeight = screenWidth / wallDistances[ray];
+                    double screenX = ray * (screenWidth / raysNumber);
+                    DrawRectangle(screenX, (screenHeight / 2) - (wallHeight / 2), (screenWidth / raysNumber), wallHeight * 15, WHITE);
+                }
+            }
             drawFPS(GetFPS());
         EndDrawing();
     }

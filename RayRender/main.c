@@ -1,7 +1,3 @@
-# if defined(WIN32) && !defined(_DEBUG)
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
-
 #include <stdio.h>
 #include <math.h>
 #include <raylib.h>
@@ -176,4 +172,5 @@ int main() {
     CloseWindow();
 
     return 0;
+
 }

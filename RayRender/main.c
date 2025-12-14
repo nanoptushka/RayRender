@@ -26,21 +26,7 @@ int main() {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2, LIME);
             
             player();
-            ray_casting();
-            
-            for (int ray = 0; ray < RAYS_NUMBER; ray++) {
-            	const double PROJECTION_PLANE_DIST = (1280  / 2) / tan(HALF_FOV);
-                double wall_height = (WALL_HEIGHT_SCALER * PROJECTION_PLANE_DIST / wall_distances[ray]);
-                
-                if (wall_height > SCREEN_HEIGHT) wall_height = SCREEN_HEIGHT;
-                if (wall_height < 0) wall_height = 0;
-
-                double screen_x = ray * (SCREEN_WIDTH / RAYS_NUMBER);
-                double column_width = (SCREEN_WIDTH / RAYS_NUMBER);
-                
-                DrawRectangle(screen_x, (SCREEN_HEIGHT / 2) - (wall_height / 2), column_width + 1, wall_height, GREEN);
-            }
-            
+            ray_casting();  
             mini_map();
             
         EndDrawing(); 

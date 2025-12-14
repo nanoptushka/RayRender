@@ -33,6 +33,14 @@ void ray_casting() {
         double correctedDepth = currentDepth * cos(currentRayAngle - player_z);
         wall_distances[ray] = fmax(0.1, correctedDepth);
 
-        currentRayAngle += DELTA_ANGLE ;
+        currentRayAngle += DELTA_ANGLE;
+
+        const double PROJECTION_PLANE_DIST = (SCREEN_WIDTH  / 2) / tan(HALF_FOV);
+        double wall_height = (WALL_HEIGHT_SCALER * PROJECTION_PLANE_DIST / wall_distances[ray]);
+                
+        if (wall_height > SCREEN_HEIGHT) wall_height = SCREEN_HEIGHT;
+        if (wall_height < 0) wall_height = 0;
+                
+        DrawRectangle(ray * (SCREEN_WIDTH / RAYS_NUMBER), (SCREEN_HEIGHT / 2) - (wall_height / 2), (SCREEN_WIDTH / RAYS_NUMBER) + 1, wall_height, GREEN);
     }
 }

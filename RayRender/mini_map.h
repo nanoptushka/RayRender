@@ -7,14 +7,14 @@ void mini_map() {
 
     for (int y = 0; y < MAP_HEIGHT_CELLS; y++) {
         for (int x = 0; x < MAP_WIDTH_CELLS; x++) {
-            int drawX = MINI_MAP_OFFSET_X + x * MINI_MAP_CELL_X;
-            int drawY = MINI_MAP_OFFSET_Y + y * MINI_MAP_CELL_Y;
+            int draw_x = MINI_MAP_OFFSET_X + x * MINI_MAP_CELL_X;
+            int draw_y = MINI_MAP_OFFSET_Y + y * MINI_MAP_CELL_Y;
 
             switch (MAP[y][x]) {
                 case 0: 
                     break;
                 case 1:
-                    DrawRectangle(drawX, drawY, MINI_MAP_CELL_X, MINI_MAP_CELL_Y, DARKGREEN);
+                    DrawRectangle(draw_x, draw_y, MINI_MAP_CELL_X, MINI_MAP_CELL_Y, DARKGREEN);
                     break;
             }
         }

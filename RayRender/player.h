@@ -2,35 +2,35 @@ void player() {
   double move_dir_x = cos(player_z);
   double move_dir_y = sin(player_z);
 
-  int newPlayerX = player_x;
-  int newPlayerY = player_y;
+  int new_player_x = player_x;
+  int new_player_y = player_y;
 
   if (IsKeyDown(KEY_W)) {
-    newPlayerX += move_dir_x * SPEED;
-    newPlayerY += move_dir_y * SPEED;
+    new_player_x += move_dir_x * SPEED;
+    new_player_y += move_dir_y * SPEED;
   }
   if (IsKeyDown(KEY_S)) {
-    newPlayerX -= move_dir_x * SPEED;
-    newPlayerY -= move_dir_y * SPEED;
+    new_player_x -= move_dir_x * SPEED;
+    new_player_y -= move_dir_y * SPEED;
   }
 
   if (IsKeyDown(KEY_A)) {
-    newPlayerX += cos(player_z - M_PI/2) * SPEED;
-    newPlayerY += sin(player_z - M_PI/2) * SPEED;
+    new_player_x += cos(player_z - M_PI/2) * SPEED;
+    new_player_y += sin(player_z - M_PI/2) * SPEED;
   }
   if (IsKeyDown(KEY_D)) {
-    newPlayerX += cos(player_z + M_PI/2) * SPEED;
-    newPlayerY += sin(player_z + M_PI/2) * SPEED;
+    new_player_x += cos(player_z + M_PI/2) * SPEED;
+    new_player_y += sin(player_z + M_PI/2) * SPEED;
   }
   
-  int mapCellX = (int)(newPlayerX / CELL_SIZE_X);
-  int mapCellY = (int)(newPlayerY / CELL_SIZE_Y);
+  int map_cell_x = (int)(new_player_x / CELL_SIZE_X);
+  int map_cell_y = (int)(new_player_y / CELL_SIZE_Y);
 
-  if (mapCellX >= 0 && mapCellX < MAP_WIDTH_CELLS &&
-      mapCellY >= 0 && mapCellY < MAP_HEIGHT_CELLS) {
-      if (MAP[mapCellY][mapCellX] == 0) {
-          player_x = newPlayerX;
-          player_y = newPlayerY;
+  if (map_cell_x >= 0 && map_cell_x < MAP_WIDTH_CELLS &&
+      map_cell_y >= 0 && map_cell_y < MAP_HEIGHT_CELLS) {
+      if (MAP[map_cell_y][map_cell_x] == 0) {
+          player_x = new_player_x;
+          player_y = new_player_y;
       }
   }
 

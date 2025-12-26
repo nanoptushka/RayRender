@@ -1,39 +1,39 @@
 void ray_casting() {
-    double currentRayAngle = player_z - HALF_FOV;
+    double current_ray_angle = player_z - HALF_FOV;
     
     for (int ray = 0; ray < RAYS_NUMBER; ray++) {
-        double sin_a = sin(currentRayAngle);
-        double cos_a = cos(currentRayAngle);
+        double sin_a = sin(current_ray_angle);
+        double cos_a = cos(current_ray_angle);
         
-        double currentDepth = 0.0;
+        double current_depth = 0.0;
         
         for (int depth_step = 0; depth_step < MAX_DEPTH; depth_step++) {
             double x = player_x + depth_step * cos_a;
             double y = player_y + depth_step * sin_a;
             
-            int mapX = (int)(x / CELL_SIZE_X);
-            int mapY = (int)(y / CELL_SIZE_Y);
+            int map_x = (int)(x / CELL_SIZE_X);
+            int map_y = (int)(y / CELL_SIZE_Y);
             
-            if (mapX >= 0 && mapX < MAP_WIDTH_CELLS &&
-                mapY >= 0 && mapY < MAP_HEIGHT_CELLS) {
+            if (map_x >= 0 && map_x < MAP_WIDTH_CELLS &&
+                map_y >= 0 && map_y < MAP_HEIGHT_CELLS) {
                 
-                if (MAP[mapY][mapX] == 1) {
-                    currentDepth = depth_step;
+                if (MAP[map_y][map_x] == 1) {
+                    current_depth = depth_step;
                     break;
                 }
             } else {
-                currentDepth = depth_step;
+                current_depth = depth_step;
                 break;
             }
             if (depth_step == MAX_DEPTH - 1) {
-                currentDepth = MAX_DEPTH;
+                current_depth = MAX_DEPTH;
             }
         }
         
-        double correctedDepth = currentDepth * cos(currentRayAngle - player_z);
-        wall_distances[ray] = fmax(0.1, correctedDepth);
+        double corrected_depth = current_depth * cos(current_ray_angle - player_z);
+        wall_distances[ray] = fmax(0.1, corrected_depth);
 
-        currentRayAngle += DELTA_ANGLE;
+        current_ray_angle += DELTA_ANGLE;
 
         const double PROJECTION_PLANE_DIST = (SCREEN_WIDTH  / 2) / tan(HALF_FOV);
         double wall_height = (WALL_HEIGHT_SCALER * PROJECTION_PLANE_DIST / wall_distances[ray]);
